@@ -1,7 +1,5 @@
 defmodule KRPCProtocol.Encoder do
 
-  require Logger
-
   defp gen_dht_query(command, tid, options) when is_map(options) do
     Bencodex.encode %{"y" => "q", "t" => tid, "q" => command, "a" => options}
   end

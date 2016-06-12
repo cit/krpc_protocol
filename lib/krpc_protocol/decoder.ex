@@ -1,5 +1,4 @@
 defmodule KRPCProtocol.Decoder do
-  require Logger
 
   def decode(payload) when is_binary(payload) do
     try do
