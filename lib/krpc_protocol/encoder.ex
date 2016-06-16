@@ -1,13 +1,5 @@
 defmodule KRPCProtocol.Encoder do
 
-  defp gen_dht_query(command, tid, options) when is_map(options) do
-    Bencodex.encode %{"y" => "q", "t" => tid, "q" => command, "a" => options}
-  end
-
-  defp gen_dht_response(options, tid) when is_map(options) do
-    Bencodex.encode %{"y" => "r", "t" => tid, "r" => options}
-  end
-
   #########
   # Error #
   #########
@@ -111,18 +103,6 @@ defmodule KRPCProtocol.Encoder do
     }, tid
   end
 
-  # This function returns a bencoded Mainline DHT get_peers query. It
-  # needs a 20 bytes node id and a 20 bytes info_hash as an
-  # argument. Optional arguments are [want: "n6", scrape: true]
-  defp add_option_if_defined(dict, _key, nil), do: dict
-  defp add_option_if_defined(dict, key, value) do
-    if value == true do
-      Map.put_new(dict, to_string(key), 1)
-    else
-      Map.put_new(dict, to_string(key), value)
-    end
-  end
-
   def compact_format_values(nodes), do: compact_format_values(nodes, "")
   def compact_format_values([], result), do: result
   def compact_format_values([head | tail], result) do
@@ -141,7 +121,30 @@ defmodule KRPCProtocol.Encoder do
     compact_format(tail, result)
   end
 
-  def node_to_binary({oct1, oct2, oct3, oct4}, port) do
+  #####################
+  # Private Functions #
+  #####################
+
+  ## This function generates a 16 bit (2 byte) random transaction ID converts it
+  ## to a binary and returns it.
+  defp gen_tid do
+    :random.seed(:erlang.system_time(:milli_seconds))
+
+    fn -> :rand.uniform 255 end
+    |> Stream.repeatedly
+    |> Enum.take(4)
+    |> :binary.list_to_bin
+  end
+
+  defp gen_dht_query(command, tid, options) when is_map(options) do
+    Bencodex.encode %{"y" => "q", "t" => tid, "q" => command, "a" => options}
+  end
+
+  defp gen_dht_response(options, tid) when is_map(options) do
+    Bencodex.encode %{"y" => "r", "t" => tid, "r" => options}
+  end
+
+  defp node_to_binary({oct1, oct2, oct3, oct4}, port) do
     <<oct1    :: size(8),
       oct2    :: size(8),
       oct3    :: size(8),
@@ -149,7 +152,7 @@ defmodule KRPCProtocol.Encoder do
       port    :: size(16)>>
   end
 
-  def node_to_binary(node_id, {oct1, oct2, oct3, oct4}, port) do
+  defp node_to_binary(node_id, {oct1, oct2, oct3, oct4}, port) do
     <<node_id :: binary,
       oct1    :: size(8),
       oct2    :: size(8),
@@ -158,21 +161,20 @@ defmodule KRPCProtocol.Encoder do
       port    :: size(16)>>
   end
 
+  # This function returns a bencoded mainline DHT get_peers query. It
+  # needs a 20 bytes node ID and a 20 bytes info_hash as an
+  # argument. Optional arguments are [want: "n6", scrape: true]
+  defp add_option_if_defined(dict, _key, nil), do: dict
+  defp add_option_if_defined(dict, key, value) do
+    if value == true do
+      Map.put_new(dict, to_string(key), 1)
+    else
+      Map.put_new(dict, to_string(key), value)
+    end
+  end
 
   defp query_dict(id, info_hash) do
     %{"id" => id, "info_hash" => info_hash}
-  end
-
-  @doc ~S"""
-  This function generates a 16 bit (2 byte) random transaction id as a
-  binary.
-  """
-  def gen_tid do
-    :random.seed(:erlang.system_time(:milli_seconds))
-
-    Stream.repeatedly(fn -> :rand.uniform 255 end)
-    |> Enum.take(4)
-    |> :binary.list_to_bin
   end
 
 end
