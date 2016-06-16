@@ -103,7 +103,7 @@ defmodule KRPCProtocol.Decoder do
   end
 
 
-  def decode(%{"y" => "r", "t" => tid, "r" => %{"id" => node_id, "nodes" => nodes} }) do
+  def decode(%{"y" => "r", "t" => tid, "r" => %{"id" => node_id, "nodes" => nodes}}) do
     {:find_node_reply, %{tid: tid, node_id: node_id, values: nil, nodes: extract_nodes(nodes)}}
   end
 
