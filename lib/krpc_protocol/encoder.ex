@@ -50,10 +50,11 @@ defmodule KRPCProtocol.Encoder do
   end
 
   def encode(:get_peers, args) do
-    options = query_dict(args[:node_id], args[:info_hash])
+    options = args[:node_id]
+    |> query_dict(args[:info_hash])
     |> add_option_if_defined(:scrape, args[:scrape])
     |> add_option_if_defined(:noseed, args[:noseed])
-    |> add_option_if_defined(:want, args[:want])
+    |> add_option_if_defined(:want,   args[:want])
 
     if args[:tid] do
       gen_dht_query("get_peers", args[:tid], options)
@@ -69,7 +70,8 @@ defmodule KRPCProtocol.Encoder do
   iex> KRPCProtocol.encode(:announce_peer, node_id: node_id, info_hash: info_hash)
   """
   def encode(:announce_peer, args) do
-    options = query_dict(args[:node_id], args[:info_hash])
+    options = args[:node_id]
+    |> query_dict(args[:info_hash])
     |> add_option_if_defined(:implied_port, args[:implied_port])
     |> add_option_if_defined(:port, args[:port])
     |> add_option_if_defined(:token, args[:token])
