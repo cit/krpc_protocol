@@ -14,7 +14,7 @@ defmodule KRPCProtocol.Encoder do
 
   @doc ~S"""
   This function returns a bencoded Mainline DHT ping query. It needs a 20 bytes
-  node id an argument. The tid (transaction id) is optional.
+  node ID an argument. The tid (transaction id) is optional.
 
   ## Example
   iex> KRPCProtocol.encode(:ping, tid: "aa", node_id: node_id)
@@ -29,7 +29,7 @@ defmodule KRPCProtocol.Encoder do
 
   @doc ~S"""
   This function returns a bencoded Mainline DHT find_node query. It
-  needs a 20 bytes node id and a 20 bytes target id as an argument.
+  needs a 20 bytes node Id and a 20 bytes target ID as an argument.
 
   ## Example
   iex> KRPCProtocol.encode(:find_node, node_id: node_id, target: info_hash)
@@ -56,7 +56,7 @@ defmodule KRPCProtocol.Encoder do
   end
 
   @doc ~S"""
-  This function returns a bencoded Mainline DHT announce_peer query.
+  This function returns a bencoded mainline DHT announce_peer query.
 
   ## Example
   iex> KRPCProtocol.encode(:announce_peer, node_id: node_id, info_hash: info_hash)
