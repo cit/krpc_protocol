@@ -3,6 +3,22 @@
 
 KRPCProtocol is an elixir package for decoding and encoding mainline DHT messages.
 
+## Installation
+
+First, add `krpc_protocol` to your `mix.exs` dependencies:
+
+```elixir
+def deps do
+    [{:krpc_protocol, "~> 0.0.1"}]
+end
+```
+
+Then, update your dependencies:
+
+```sh-session
+$ mix deps.get
+```
+
 ## Usage
 
 ### Encoding
@@ -26,14 +42,4 @@ The decode function returns `{:invalid, error_msg}` if an error occurs during th
 ```elixir
 iex> KRPCProtocol.decode("abc")
 {:invalid, "Invalid becoded payload: \"abc\""}
-```
-
-## Installation
-
-Add krpc_protocol to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-    [{:krpc_protocol, "~> 0.0.1"}]
-end
 ```

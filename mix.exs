@@ -5,30 +5,31 @@ defmodule KrpcProtocol.Mixfile do
     [app: :krpc_protocol,
      version: "0.0.1",
      elixir: "~> 1.2",
-     build_embedded: Mix.env == :prod,
+     build_embedded:  Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps]
   end
 
-  # Configuration for the OTP application
-  #
-  # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    []
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:mydep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
-  #
-  # Type "mix help deps" for more examples and options
   defp deps do
-    [
-      {:bencodex,   "~> 1.0.0"},
-    ]
+    [{:bencodex,   "~> 1.0.0"}]
   end
+
+  defp description do
+    """
+    KRPCProtocol is an elixir package for decoding and encoding mainline DHT messages.
+    """
+  end
+
+  defp package do
+    [name:        :krpc_protocol,
+     files:       ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
+     maintainers: ["Florian Adamsky"],
+     licenses:    ["MIT"],
+     links:       %{"GitHub" => "https://github.com/cit/krpc_protocol"}]
+  end
+
 end
