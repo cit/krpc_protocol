@@ -7,6 +7,8 @@ defmodule KrpcProtocol.Mixfile do
      elixir: "~> 1.2",
      build_embedded:  Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     description: description,
+     package: package,
      deps: deps]
   end
 
