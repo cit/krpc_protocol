@@ -10,19 +10,19 @@ defmodule KRPCProtocol.Decoder.Test do
   #####################
 
   test "Invalid bencoded message" do
-    assert {:ignore, _} = KRPCProtocol.decode("abcdefgh")
+    assert {:invalid, _} = KRPCProtocol.decode("abcdefgh")
   end
 
   test "Valid bencoded message, but not a valid DHT message" do
-    assert {:ignore, _} = KRPCProtocol.decode(<<100, 49, 58, 118, 52, 58, 76, 84, 1, 1, 101>>)
+    assert {:invalid, _} = KRPCProtocol.decode(<<100, 49, 58, 118, 52, 58, 76, 84, 1, 1, 101>>)
   end
 
   test "Valid packet but the node id is not 160 bit long" do
     to_short = "d1:ad2:id18:aaaaaaaaaaaaaaaaaae1:q4:ping1:t2:aa1:y1:qe"
     to_long  = "d1:ad2:id22:aaaaaaaaaaaaaaaaaaaaaa:q4:ping1:t2:aa1:y1:qe"
 
-    assert {:ignore, _} = KRPCProtocol.decode(to_short)
-    assert {:ignore, _} = KRPCProtocol.decode(to_long)
+    assert {:invalid, _} = KRPCProtocol.decode(to_short)
+    assert {:invalid, _} = KRPCProtocol.decode(to_long)
   end
 
   ##################

@@ -4,8 +4,8 @@ defmodule KRPCProtocol.Decoder do
     try do
       payload |> Bencodex.decode |> check_errors |> decode
     rescue
-      error in RuntimeError -> {:ignore, error.message}
-      _error in _ -> {:ignore, "Invalid becoded payload: #{inspect payload}"}
+      error in RuntimeError -> {:invalid, error.message}
+      _error in _ -> {:invalid, "Invalid becoded payload: #{inspect payload}"}
     end
   end
 
@@ -113,7 +113,7 @@ defmodule KRPCProtocol.Decoder do
 
   ## We ignore unknown messages
   def decode(message) do
-    {:ignore, message}
+    {:invalid, message}
   end
 
   ## This function checks for common error.
