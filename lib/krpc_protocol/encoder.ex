@@ -103,37 +103,39 @@ defmodule KRPCProtocol.Encoder do
     }, tid
   end
 
-  def compact_format_values(nodes), do: compact_format_values(nodes, "")
-  def compact_format_values([], result), do: result
-  def compact_format_values([head | tail], result) do
-    {ip, port} = head
+  @doc ~S"""
+  This function generates a 16 bit (2 byte) random transaction ID and converts
+  it to a binary and returns it. This transaction ID is echoed in the response.
+  """
+  def gen_tid do
+    :rand.seed(:exs64, :os.timestamp)
 
-    result = result <> node_to_binary(ip, port)
-    compact_format_values(tail, result)
-  end
-
-  def compact_format(nodes), do: compact_format(nodes, "")
-  def compact_format([], result), do: result
-  def compact_format([head | tail], result) do
-    {node_id, ip, port} = head
-
-    result = result <> node_to_binary(node_id, ip, port)
-    compact_format(tail, result)
+    fn -> :rand.uniform 255 end
+    |> Stream.repeatedly
+    |> Enum.take(2)
+    |> :binary.list_to_bin
   end
 
   #####################
   # Private Functions #
   #####################
 
-  ## This function generates a 16 bit (2 byte) random transaction ID converts it
-  ## to a binary and returns it.
-  defp gen_tid do
-    :random.seed(:erlang.system_time(:milli_seconds))
+  defp compact_format_values(nodes), do: compact_format_values(nodes, "")
+  defp compact_format_values([], result), do: result
+  defp compact_format_values([head | tail], result) do
+    {ip, port} = head
 
-    fn -> :rand.uniform 255 end
-    |> Stream.repeatedly
-    |> Enum.take(4)
-    |> :binary.list_to_bin
+    result = result <> node_to_binary(ip, port)
+    compact_format_values(tail, result)
+  end
+
+  defp compact_format(nodes), do: compact_format(nodes, "")
+  defp compact_format([], result), do: result
+  defp compact_format([head | tail], result) do
+    {node_id, ip, port} = head
+
+    result = result <> node_to_binary(node_id, ip, port)
+    compact_format(tail, result)
   end
 
   defp gen_dht_query(command, tid, options) when is_map(options) do

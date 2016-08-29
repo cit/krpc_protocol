@@ -6,6 +6,13 @@ defmodule KRPCProtocol.Encoder.Test do
 
   def get_peers_str, do: "d1:ad2:id20:" <> node_id <> "9:info_hash20:" <> info_hash
 
+  ###################
+  # Other Functions #
+  ###################
+
+  test "if gen_tid generates a two bytes string" do
+    assert byte_size(KRPCProtocol.gen_tid) == 2
+  end
 
   ###########
   # Queries #
