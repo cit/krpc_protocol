@@ -1,5 +1,9 @@
 defmodule KRPCProtocol.Encoder do
 
+  @moduledoc ~S"""
+  KRPCProtocol.Encoder provides functions to encode mainline DHT messages.
+  """
+
   #########
   # Error #
   #########

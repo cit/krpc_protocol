@@ -1,5 +1,9 @@
 defmodule KRPCProtocol.Decoder do
 
+  @moduledoc ~S"""
+  KRPCProtocol.Encoder provides functions to decode mainline DHT messages.
+  """
+
   def decode(payload) when is_binary(payload) do
     try do
       payload |> Bencodex.decode |> check_errors |> decode
