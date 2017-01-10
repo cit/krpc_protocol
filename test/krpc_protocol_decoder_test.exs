@@ -45,7 +45,7 @@ defmodule KRPCProtocol.Decoder.Test do
   ########
 
   test "Ping" do
-    result = {:ping, %{node_id: node_id, tid: "aa"}}
+    result = {:ping, %{node_id: node_id(), tid: "aa"}}
     assert KRPCProtocol.decode("d1:ad2:id20:aaaaaaaaaaaaaaaaaaaae1:q4:ping1:t2:aa1:y1:qe") == result
   end
 
@@ -66,7 +66,7 @@ defmodule KRPCProtocol.Decoder.Test do
 
   test "Find Node" do
     ## valid find_node
-    result = {:find_node, %{node_id: node_id, target: "BBB", tid: "aa"}}
+    result = {:find_node, %{node_id: node_id(), target: "BBB", tid: "aa"}}
     bin = "d1:ad2:id20:aaaaaaaaaaaaaaaaaaaa6:target3:BBBe1:q9:find_node1:t2:aa1:y1:qe"
     assert KRPCProtocol.decode(bin) == result
 
@@ -81,7 +81,7 @@ defmodule KRPCProtocol.Decoder.Test do
 
   test "Get_Peers request" do
     ## valid get_peers
-    result = {:get_peers, %{node_id: node_id, info_hash: "BBB", tid: "aa"}}
+    result = {:get_peers, %{node_id: node_id(), info_hash: "BBB", tid: "aa"}}
     bin = "d1:ad2:id20:aaaaaaaaaaaaaaaaaaaa9:info_hash3:BBBe1:q9:get_peers1:t2:aa1:y1:qe"
     assert KRPCProtocol.decode(bin) == result
 
@@ -96,7 +96,7 @@ defmodule KRPCProtocol.Decoder.Test do
 
   test "Announce_peer request" do
     bin = "d1:ad2:id20:aaaaaaaaaaaaaaaaaaaa9:info_hash4:aaaa4:porti1e5:token1:ae1:q13:announce_peer1:t1:a1:y1:qe"
-    result = {:announce_peer, %{info_hash: "aaaa", node_id: node_id, tid: "a", token: "a", port: 1}}
+    result = {:announce_peer, %{info_hash: "aaaa", node_id: node_id(), tid: "a", token: "a", port: 1}}
     assert KRPCProtocol.decode(bin) == result
 
     ## announce_peer without info_hash

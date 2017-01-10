@@ -33,7 +33,7 @@ defmodule KRPCProtocol.Encoder do
 
   @doc ~S"""
   This function returns a bencoded Mainline DHT find_node query. It
-  needs a 20 bytes node Id and a 20 bytes target ID as an argument.
+  needs a 20 bytes node ID and a 20 bytes target ID as an argument.
 
   ## Example
   iex> KRPCProtocol.encode(:find_node, node_id: node_id, target: info_hash)
