@@ -64,7 +64,7 @@ defmodule KRPCProtocol.Decoder.Test do
   # Find Node #
   #############
 
-  test "Find Node" do
+  test "Find Node Queries" do
     ## valid find_node
     result = {:find_node, %{node_id: node_id(), target: "BBB", tid: "aa"}}
     bin = "d1:ad2:id20:aaaaaaaaaaaaaaaaaaaa6:target3:BBBe1:q9:find_node1:t2:aa1:y1:qe"
@@ -73,6 +73,24 @@ defmodule KRPCProtocol.Decoder.Test do
     ## find_node without target
     bin = "d1:ad2:id20:aaaaaaaaaaaaaaaaaaaae1:q9:find_node1:t2:aa1:y1:qe"
     assert {:error, _} = KRPCProtocol.decode(bin)
+  end
+
+
+  test "Find Node Response with a IPv4 node" do
+    result = {:find_node_reply, %{node_id: "0123456789abcdefghij",
+               nodes: [{"aaaaaaaaaaaaaaaaaaaa", {{97, 97, 97, 97}, 25189}}],
+               tid: "aa", values: nil}}
+    bin = "d1:rd2:id20:0123456789abcdefghij5:nodes26:aaaaaaaaaaaaaaaaaaaaaaaabee1:t2:aa1:y1:re"
+    assert KRPCProtocol.decode(bin) == result
+  end
+
+  test "Find Node Response with a IPv6 node" do
+    ipv6_addr = {97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,97, 97, 97, 97}
+    result = {:find_node_reply, %{node_id: "0123456789abcdefghij",
+               nodes: [{"aaaaaaaaaaaaaaaaaaaa", {ipv6_addr, 25189}}],
+               tid: "aa", values: nil}}
+    bin = "d1:rd2:id20:0123456789abcdefghij6:nodes638:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabee1:t2:aa1:y1:re"
+    assert KRPCProtocol.decode(bin) == result
   end
 
   #############
@@ -110,7 +128,6 @@ defmodule KRPCProtocol.Decoder.Test do
     bin = "d1:ad2:id20:aaaaaaaaaaaaaaaaaaaa9:info_hash4:aaaa4:porti1ee1:q13:announce_peer1:t1:a1:y1:qe"
     assert {:error, _} = KRPCProtocol.decode(bin)
   end
-
 
 
 end

@@ -95,8 +95,7 @@ defmodule KRPCProtocol.Decoder do
   # Replies #
   ###########
 
-  ## Extract nodes and values from the DHT response and create a list
-  ## of it. If values are empty, it will create an empty list.
+  ## Get_peer Reply
 
   def decode(%{"y" => "r", "t" => tid, "r" => %{"id" => id, "token" => t, "values" => values}}) do
     {:get_peer_reply, %{tid: tid, node_id: id, token: t, values: extract_values(values), nodes: nil}}
@@ -106,10 +105,21 @@ defmodule KRPCProtocol.Decoder do
     {:get_peer_reply, %{tid: tid, node_id: id, token: t, values: nil, nodes: extract_nodes(nodes)}}
   end
 
+  def decode(%{"y" => "r", "t" => tid, "r" => %{"id" => id, "token" => t, "nodes6" => nodes}}) do
+    {:get_peer_reply, %{tid: tid, node_id: id, token: t, values: nil, nodes: extract_nodes(nodes)}}
+  end
+
+  ## Find_node Reply
 
   def decode(%{"y" => "r", "t" => tid, "r" => %{"id" => node_id, "nodes" => nodes}}) do
     {:find_node_reply, %{tid: tid, node_id: node_id, values: nil, nodes: extract_nodes(nodes)}}
   end
+
+  def decode(%{"y" => "r", "t" => tid, "r" => %{"id" => node_id, "nodes6" => nodes}}) do
+    {:find_node_reply, %{tid: tid, node_id: node_id, values: nil, nodes: extract_nodes(nodes)}}
+  end
+
+  ## Ping Reply
 
   def decode(%{"y" => "r", "t" => tid, "r" => %{"id" => node_id}}) do
     {:ping_reply, %{node_id: node_id, tid: tid}}
@@ -120,6 +130,10 @@ defmodule KRPCProtocol.Decoder do
     {:invalid, message}
   end
 
+  #####################
+  # Private Functions #
+  #####################
+
   ## This function checks for common error.
   defp check_errors(msg) do
     if Map.has_key?(msg, "a") and byte_size(msg["a"]["id"]) != 20 do
@@ -129,43 +143,51 @@ defmodule KRPCProtocol.Decoder do
     msg
   end
 
-  @doc """
-  This function extracts the Ipv4 address from a 'get_peers' response
-  which are sharing the given infohash. (values)
-  """
-  def extract_values(nil), do: []
 
-  def extract_values(nodes), do: extract_values(nodes, [])
-
-  def extract_values([], result), do: result
-
-  def extract_values([addr | tail], result) do
-    extract_values(tail, result ++ [compact_format(addr)])
+  ## This function extracts the Ipv4 address from a 'get_peers' response
+  ## which are sharing the given infohash. (values)
+  defp extract_values(nil), do: []
+  defp extract_values(nodes), do: extract_values(nodes, [])
+  defp extract_values([], result), do: result
+  defp extract_values([addr | tail], result) do
+    extract_values(tail, result ++ [comp_form(addr)])
   end
 
-  @doc """
-  This function takes the nodes element and extracts all the IPv4
-  nodes and returns it as a list.
-  """
-  def extract_nodes(nil), do: []
-
-  def extract_nodes(nodes), do: extract_nodes(nodes, [])
-
-  def extract_nodes(<<>>, result), do: result
-
-  def extract_nodes(<<id :: binary-size(20), addr :: binary-size(6),
+  ## This function takes the nodes element and extracts all the IPv4/IPv6 nodes
+  ## and returns it as a list.
+  defp extract_nodes(nil), do: []
+  defp extract_nodes(nodes), do: extract_nodes(nodes, [])
+  defp extract_nodes(<<>>, result), do: result
+  ## IPv6
+  defp extract_nodes(<<id :: binary-size(20), addr :: binary-size(18),
                     tail :: binary>>, result) do
-    extract_nodes(tail, result ++ [{id, compact_format(addr)}])
+    extract_nodes(tail, result ++ [{id, comp_form(addr)}])
+  end
+  ## IPv4
+  defp extract_nodes(<<id :: binary-size(20), addr :: binary-size(6),
+                    tail :: binary>>, result) do
+    extract_nodes(tail, result ++ [{id, comp_form(addr)}])
   end
 
-  @doc """
-  This function takes a byte string which is encoded in compact format
-  and extracts the socket address (IPv4, port) and returns it.
-  """
-  def compact_format(<<ipv4 :: binary-size(4), port :: size(16) >>) do
-    << oct1 :: size(8), oct2 :: size(8),
-    oct3 :: size(8), oct4 :: size(8) >> = ipv4
-    {{oct1, oct2, oct3, oct4}, port}
+
+  ## This functions gets a binary and extracts the IPv4/IPv6 address and the
+  ## port and returns it as a tuple in the following format: {{127, 0, 0, 1}, 80}
+  defp comp_form(<<v4 :: binary-size(4),  port :: size(16)>>), do: {ip_tuple(v4), port}
+  defp comp_form(<<v6 :: binary-size(16), port :: size(16)>>), do: {ip_tuple(v6), port}
+
+  ## This function gets an IPv4/IPv6 address as a binary and convert is to a
+  ## tuple.
+  ## Example
+  ##  iex> ip_tuple("aaaa")
+  ##    {97, 97, 97, 97}
+  defp ip_tuple(ip_addr) do
+    ip_addr
+    |> String.graphemes
+    |> Enum.map(fn (x) ->
+      <<integer_char :: size(8)>> = x
+      integer_char
+    end)
+    |> List.to_tuple
   end
 
 end
