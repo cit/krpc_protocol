@@ -45,6 +45,9 @@ defmodule KRPCProtocol.Encoder do
     encode(:find_node, tid: gen_tid(), node_id: id, target: target)
   end
 
+
+  @doc "TODO"
+
   def encode(:get_peers, args) do
     options = args[:node_id]
     |> query_dict(args[:info_hash])
@@ -171,13 +174,11 @@ defmodule KRPCProtocol.Encoder do
   # needs a 20 bytes node ID and a 20 bytes info_hash as an
   # argument. Optional arguments are [want: "n6", scrape: true]
   defp add_option_if_defined(dict, _key, nil), do: dict
+  defp add_option_if_defined(dict, key, true), do: Map.put_new(dict, to_string(key), 1)
   defp add_option_if_defined(dict, key, value) do
-    if value == true do
-      Map.put_new(dict, to_string(key), 1)
-    else
-      Map.put_new(dict, to_string(key), value)
-    end
+    Map.put_new(dict, to_string(key), value)
   end
+
 
   defp query_dict(id, info_hash) do
     %{"id" => id, "info_hash" => info_hash}
