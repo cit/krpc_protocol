@@ -84,7 +84,7 @@ defmodule KRPCProtocol.Decoder.Test do
   end
 
   test "Find Node Response with a IPv6 node" do
-    ipv6_addr = {97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,97, 97, 97, 97}
+    ipv6_addr = {24929, 24929, 24929, 24929, 24929, 24929, 24929, 24929}
     result = {:find_node_reply, %{node_id: "0123456789abcdefghij",
                nodes: [{"aaaaaaaaaaaaaaaaaaaa", {ipv6_addr, 25189}}],
                tid: "aa", values: nil}}
