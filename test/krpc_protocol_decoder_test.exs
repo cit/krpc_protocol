@@ -75,7 +75,6 @@ defmodule KRPCProtocol.Decoder.Test do
     assert {:error, _} = KRPCProtocol.decode(bin)
   end
 
-
   test "Find Node Response with a IPv4 node" do
     result = {:find_node_reply, %{node_id: "0123456789abcdefghij",
                nodes: [{"aaaaaaaaaaaaaaaaaaaa", {{97, 97, 97, 97}, 25189}}],

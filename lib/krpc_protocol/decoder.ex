@@ -180,14 +180,19 @@ defmodule KRPCProtocol.Decoder do
   ## Example
   ##  iex> ip_tuple("aaaa")
   ##    {97, 97, 97, 97}
-  defp ip_tuple(ip_addr) do
-    ip_addr
-    |> String.graphemes
-    |> Enum.map(fn (x) ->
-      <<integer_char :: size(8)>> = x
-      integer_char
-    end)
-    |> List.to_tuple
+  defp ip_tuple(ip_addr) when byte_size(ip_addr) == 4,  do: ipv4_tuple(ip_addr, [])
+  defp ip_tuple(ip_addr) when byte_size(ip_addr) == 16, do: ipv6_tuple(ip_addr, [])
+
+  defp ipv6_tuple("", result), do: List.to_tuple(result)
+  defp ipv6_tuple(ip_addr, result) do
+    <<two_octets :: size(16), rest :: binary>> = ip_addr
+    ipv6_tuple(rest, result ++ [two_octets])
+  end
+
+  defp ipv4_tuple("", result), do: List.to_tuple(result)
+  defp ipv4_tuple(ip_addr, result) do
+    <<octet :: size(8), rest :: binary>> = ip_addr
+    ipv4_tuple(rest, result ++ [octet])
   end
 
 end
