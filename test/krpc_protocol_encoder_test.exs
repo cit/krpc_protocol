@@ -14,6 +14,18 @@ defmodule KRPCProtocol.Encoder.Test do
     assert byte_size(KRPCProtocol.gen_tid) == 2
   end
 
+  test "if node_to_binary/2 and comp_form/1 work for IPv4 addresses" do
+    ipv4   = {127, 0, 0, 23}
+    binary = KRPCProtocol.Encoder.node_to_binary(ipv4, 6881)
+    assert KRPCProtocol.Decoder.comp_form(binary) == {ipv4, 6881}
+  end
+
+  test "if node_to_binary/2 and comp_form/1 work for IPv6 addresses" do
+    ipv6   = {8195, 205, 50123, 38656, 27383, 10495, 65201, 61981}
+    binary = KRPCProtocol.Encoder.node_to_binary(ipv6, 6881)
+   assert KRPCProtocol.Decoder.comp_form(binary) == {ipv6, 6881}
+  end
+
   ###########
   # Queries #
   ###########

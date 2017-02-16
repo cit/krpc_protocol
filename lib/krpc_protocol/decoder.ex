@@ -172,8 +172,8 @@ defmodule KRPCProtocol.Decoder do
 
   ## This functions gets a binary and extracts the IPv4/IPv6 address and the
   ## port and returns it as a tuple in the following format: {{127, 0, 0, 1}, 80}
-  defp comp_form(<<v4 :: binary-size(4),  port :: size(16)>>), do: {ip_tuple(v4), port}
-  defp comp_form(<<v6 :: binary-size(16), port :: size(16)>>), do: {ip_tuple(v6), port}
+  def comp_form(<<v4 :: binary-size(4),  port :: size(16)>>), do: {ip_tuple(v4), port}
+  def comp_form(<<v6 :: binary-size(16), port :: size(16)>>), do: {ip_tuple(v6), port}
 
   ## This function gets an IPv4/IPv6 address as a binary and convert is to a
   ## tuple.
@@ -183,16 +183,16 @@ defmodule KRPCProtocol.Decoder do
   defp ip_tuple(ip_addr) when byte_size(ip_addr) == 4,  do: ipv4_tuple(ip_addr, [])
   defp ip_tuple(ip_addr) when byte_size(ip_addr) == 16, do: ipv6_tuple(ip_addr, [])
 
-  defp ipv6_tuple("", result), do: List.to_tuple(result)
-  defp ipv6_tuple(ip_addr, result) do
-    <<two_octets :: size(16), rest :: binary>> = ip_addr
-    ipv6_tuple(rest, result ++ [two_octets])
-  end
-
   defp ipv4_tuple("", result), do: List.to_tuple(result)
   defp ipv4_tuple(ip_addr, result) do
     <<octet :: size(8), rest :: binary>> = ip_addr
     ipv4_tuple(rest, result ++ [octet])
+  end
+
+  defp ipv6_tuple("", result), do: List.to_tuple(result)
+  defp ipv6_tuple(ip_addr, result) do
+    <<two_octets :: size(16), rest :: binary>> = ip_addr
+    ipv6_tuple(rest, result ++ [two_octets])
   end
 
 end

@@ -141,7 +141,7 @@ defmodule KRPCProtocol.Encoder do
   defp compact_format([head | tail], result) do
     {node_id, ip, port} = head
 
-    result = result <> node_to_binary(node_id, ip, port)
+    result = result <> node_id <> node_to_binary(ip, port)
     compact_format(tail, result)
   end
 
@@ -153,21 +153,18 @@ defmodule KRPCProtocol.Encoder do
     Bencodex.encode %{"y" => "r", "t" => tid, "r" => options}
   end
 
-  defp node_to_binary({oct1, oct2, oct3, oct4}, port) do
-    <<oct1    :: size(8),
-      oct2    :: size(8),
-      oct3    :: size(8),
-      oct4    :: size(8),
-      port    :: size(16)>>
+  def node_to_binary(ip, port) when tuple_size(ip) == 4 do
+    ipstr = ip |> Tuple.to_list |> List.to_string
+    << ipstr :: binary, port :: 16>>
   end
 
-  defp node_to_binary(node_id, {oct1, oct2, oct3, oct4}, port) do
-    <<node_id :: binary,
-      oct1    :: size(8),
-      oct2    :: size(8),
-      oct3    :: size(8),
-      oct4    :: size(8),
-      port    :: size(16)>>
+  def node_to_binary(ip, port) when tuple_size(ip) == 8 do
+    ipstr = ip
+    |> Tuple.to_list
+    |> Enum.map(&<<oct1 :: 8, oct2 :: 8>> = << &1 :: 16>>)
+    |> Enum.reduce(fn(x, y) -> y <> x end)
+
+    << ipstr :: binary, port :: 16 >>
   end
 
   # This function returns a bencoded mainline DHT get_peers query. It
