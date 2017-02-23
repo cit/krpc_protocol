@@ -25,6 +25,16 @@ defmodule KRPCProtocol.Decoder.Test do
     assert {:invalid, _} = KRPCProtocol.decode(to_long)
   end
 
+  test "Find Node response with an invalid byte_size of IPv4 nodes" do
+    bin = "d1:rd2:id20:0123456789abcdefghij5:nodes27:aaaaaaaaaaaaaaaaaaaaaaaaabee1:t2:aa1:y1:re"
+    assert {:invalid, _} = KRPCProtocol.decode(bin)
+  end
+
+  test "Find Node response with an invalid byte_size of a IPv6 node" do
+    bin = "d1:rd2:id20:0123456789abcdefghij6:nodes639:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabee1:t2:aa1:y1:re"
+    assert {:invalid, _} = KRPCProtocol.decode(bin)
+  end
+
   ##################
   # Error Messages #
   ##################

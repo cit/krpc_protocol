@@ -132,9 +132,19 @@ defmodule KRPCProtocol.Decoder do
       raise "Invalid node id size: #{byte_size(msg["a"]["id"])}"
     end
 
+    if has_nodes?(msg, "nodes") and size_is_multiple_of?(msg["r"]["nodes"], 26) do
+      raise "Size of IPv4 nodes is not a multiple of 26: #{byte_size(msg["r"]["nodes"])}"
+    end
+
+    if has_nodes?(msg, "nodes6") and size_is_multiple_of?(msg["r"]["nodes6"], 38) do
+      raise "Size of IPv6 nodes is not a multiple of 38: #{byte_size(msg["r"]["nodes6"])}"
+    end
+
     msg
   end
 
+  defp has_nodes?(msg, key), do: Map.has_key?(msg, "r") and Map.has_key?(msg["r"], key)
+  defp size_is_multiple_of?(map, size), do: map |> byte_size |> rem(size) != 0
 
   ## This function extracts the Ipv4 address from a 'get_peers' response
   ## which are sharing the given infohash. (values)
