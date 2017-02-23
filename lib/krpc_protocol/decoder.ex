@@ -1,5 +1,4 @@
 defmodule KRPCProtocol.Decoder do
-
   @moduledoc ~S"""
   KRPCProtocol.Encoder provides functions to decode mainline DHT messages.
   """
@@ -31,7 +30,6 @@ defmodule KRPCProtocol.Decoder do
   ###########
 
   ## Get_peers
-
   def decode(%{"y" => "q", "t" => tid, "q" => "get_peers",
                "a" => %{"id" => node_id, "info_hash" => info_hash}}) do
     {:get_peers, %{tid: tid, node_id: node_id, info_hash: info_hash}}
@@ -43,7 +41,6 @@ defmodule KRPCProtocol.Decoder do
 
 
   ## Find_node
-
   def decode(%{"y" => "q", "t" => tid, "q" => "find_node", "a" => %{"id" => node_id,
                "target" => target}}) do
     {:find_node, %{node_id: node_id, target: target, tid: tid}}
@@ -55,14 +52,12 @@ defmodule KRPCProtocol.Decoder do
 
 
   ## Ping
-
   def decode(%{"q" => "ping", "t" => tid, "y" => "q", "a" => %{"id" => node_id}}) do
     {:ping, %{node_id: node_id, tid: tid}}
   end
 
 
   ## Announce_peer
-
   def decode(%{"q" => "announce_peer", "t" => tid, "y" => "q", "a" => %{"id" => node_id,
              "info_hash" => infohash, "port" => port, "token" => token,
              "implied_port" => implied_port}}) do
@@ -96,7 +91,6 @@ defmodule KRPCProtocol.Decoder do
   ###########
 
   ## Get_peer Reply
-
   def decode(%{"y" => "r", "t" => tid, "r" => %{"id" => id, "token" => t, "values" => values}}) do
     {:get_peer_reply, %{tid: tid, node_id: id, token: t, values: extract_values(values), nodes: nil}}
   end
@@ -106,21 +100,19 @@ defmodule KRPCProtocol.Decoder do
   end
 
   def decode(%{"y" => "r", "t" => tid, "r" => %{"id" => id, "token" => t, "nodes6" => nodes}}) do
-    {:get_peer_reply, %{tid: tid, node_id: id, token: t, values: nil, nodes: extract_nodes(nodes)}}
+    {:get_peer_reply, %{tid: tid, node_id: id, token: t, values: nil, nodes: extract_nodes6(nodes)}}
   end
 
   ## Find_node Reply
-
   def decode(%{"y" => "r", "t" => tid, "r" => %{"id" => node_id, "nodes" => nodes}}) do
     {:find_node_reply, %{tid: tid, node_id: node_id, values: nil, nodes: extract_nodes(nodes)}}
   end
 
   def decode(%{"y" => "r", "t" => tid, "r" => %{"id" => node_id, "nodes6" => nodes}}) do
-    {:find_node_reply, %{tid: tid, node_id: node_id, values: nil, nodes: extract_nodes(nodes)}}
+    {:find_node_reply, %{tid: tid, node_id: node_id, values: nil, nodes: extract_nodes6(nodes)}}
   end
 
   ## Ping Reply
-
   def decode(%{"y" => "r", "t" => tid, "r" => %{"id" => node_id}}) do
     {:ping_reply, %{node_id: node_id, tid: tid}}
   end
@@ -158,17 +150,18 @@ defmodule KRPCProtocol.Decoder do
   defp extract_nodes(nil), do: []
   defp extract_nodes(nodes), do: extract_nodes(nodes, [])
   defp extract_nodes(<<>>, result), do: result
-  ## IPv6
-  defp extract_nodes(<<id :: binary-size(20), addr :: binary-size(18),
-                    tail :: binary>>, result) do
-    extract_nodes(tail, result ++ [{id, comp_form(addr)}])
-  end
-  ## IPv4
   defp extract_nodes(<<id :: binary-size(20), addr :: binary-size(6),
                     tail :: binary>>, result) do
     extract_nodes(tail, result ++ [{id, comp_form(addr)}])
   end
 
+  defp extract_nodes6(nil), do: []
+  defp extract_nodes6(nodes), do: extract_nodes6(nodes, [])
+  defp extract_nodes6(<<>>, result), do: result
+  defp extract_nodes6(<<id :: binary-size(20), addr :: binary-size(18),
+                    tail :: binary>>, result) do
+    extract_nodes6(tail, result ++ [{id, comp_form(addr)}])
+  end
 
   ## This functions gets a binary and extracts the IPv4/IPv6 address and the
   ## port and returns it as a tuple in the following format: {{127, 0, 0, 1}, 80}
