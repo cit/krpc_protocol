@@ -38,11 +38,20 @@ defmodule KRPCProtocol.Encoder do
   ## Example
   iex> KRPCProtocol.encode(:find_node, node_id: node_id, target: info_hash)
   """
-  def encode(:find_node, tid: tid, node_id: id, target: target) do
-    gen_dht_query "find_node", tid, %{"id" => id, "target" => target}
-  end
   def encode(:find_node, node_id: id, target: target) do
-    encode(:find_node, tid: gen_tid(), node_id: id, target: target)
+    encode(:find_node, tid: gen_tid(), node_id: id, target: target, want: "n4")
+  end
+
+  def encode(:find_node, node_id: id, target: target, want: want) do
+    encode(:find_node, tid: gen_tid(), node_id: id, target: target, want: want)
+  end
+
+  def encode(:find_node, tid: tid, node_id: id, target: target) do
+    encode(:find_node, tid: tid, node_id: id, target: target, want: "n4")
+  end
+
+  def encode(:find_node, tid: tid, node_id: id, target: target, want: want) do
+    gen_dht_query "find_node", tid, %{"id" => id, "target" => target, "want" => want}
   end
 
 
@@ -92,6 +101,10 @@ defmodule KRPCProtocol.Encoder do
 
   def encode(:find_node_reply, node_id: id, nodes: nodes, tid: tid) do
     gen_dht_response %{"id" => id, "nodes" => compact_format(nodes)}, tid
+  end
+
+  def encode(:find_node_reply, node_id: id, nodes6: nodes, tid: tid) do
+    gen_dht_response %{"id" => id, "nodes6" => compact_format(nodes)}, tid
   end
 
   def encode(:get_peers_reply, node_id: id, nodes: nodes, tid: tid, token: token) do
@@ -153,15 +166,14 @@ defmodule KRPCProtocol.Encoder do
     Bencodex.encode %{"y" => "r", "t" => tid, "r" => options}
   end
 
-  def node_to_binary(ip, port) when tuple_size(ip) == 4 do
-    ipstr = ip |> Tuple.to_list |> List.to_string
-    << ipstr :: binary, port :: 16>>
+  def node_to_binary({oct1, oct2, oct3, oct4}, port) do
+    <<oct1 :: 8, oct2 :: 8, oct3 :: 8, oct4 :: 8, port :: 16>>
   end
 
   def node_to_binary(ip, port) when tuple_size(ip) == 8 do
     ipstr = ip
     |> Tuple.to_list
-    |> Enum.map(&<<oct1 :: 8, oct2 :: 8>> = << &1 :: 16>>)
+    |> Enum.map(&<<_oct1 :: 8, _oct2 :: 8>> = << &1 :: 16>>)
     |> Enum.reduce(fn(x, y) -> y <> x end)
 
     << ipstr :: binary, port :: 16 >>

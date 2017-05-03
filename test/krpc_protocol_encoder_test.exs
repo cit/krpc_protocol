@@ -15,7 +15,7 @@ defmodule KRPCProtocol.Encoder.Test do
   end
 
   test "if node_to_binary/2 and comp_form/1 work for IPv4 addresses" do
-    ipv4   = {127, 0, 0, 23}
+    ipv4   = {127, 200, 64, 23}
     binary = KRPCProtocol.Encoder.node_to_binary(ipv4, 6881)
     assert KRPCProtocol.Decoder.comp_form(binary) == {ipv4, 6881}
   end
@@ -40,7 +40,7 @@ defmodule KRPCProtocol.Encoder.Test do
   test "if KRPCProtocol DHT query find_node works" do
     str = KRPCProtocol.encode(:find_node, tid: "aa", node_id: node_id(), target: info_hash())
     start = "d1:ad2:id20:aaaaaaaaaaaaaaaaaaaa6:target20:bbbbbbbbbbbbbbbbbbbb"
-    assert str == start <> "e1:q9:find_node1:t2:aa1:y1:qe"
+    assert str == start <> "4:want2:n4e1:q9:find_node1:t2:aa1:y1:qe"
   end
 
 

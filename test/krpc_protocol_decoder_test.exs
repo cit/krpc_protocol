@@ -35,6 +35,11 @@ defmodule KRPCProtocol.Decoder.Test do
     assert {:invalid, _} = KRPCProtocol.decode(bin)
   end
 
+  test "Get_peers response without infohash" do
+    bin = "d1:ad2:id20:aaaaaaaaaaaaaaaaaaaae1:q9:get_peers1:t2:aa1:y1:qe"
+    assert {:error, _} = KRPCProtocol.decode(bin)
+  end
+
   ##################
   # Error Messages #
   ##################
@@ -111,10 +116,6 @@ defmodule KRPCProtocol.Decoder.Test do
     result = {:get_peers, %{node_id: node_id(), info_hash: "BBB", tid: "aa"}}
     bin = "d1:ad2:id20:aaaaaaaaaaaaaaaaaaaa9:info_hash3:BBBe1:q9:get_peers1:t2:aa1:y1:qe"
     assert KRPCProtocol.decode(bin) == result
-
-    ## get_peers without infohash
-    bin = "d1:ad2:id20:aaaaaaaaaaaaaaaaaaaae1:q9:get_peers1:t2:aa1:y1:qe"
-    assert {:error, _} = KRPCProtocol.decode(bin)
   end
 
   #################
