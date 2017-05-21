@@ -140,6 +140,8 @@ defmodule KRPCProtocol.Encoder do
   # Private Functions #
   #####################
 
+  # This function converts a list of nodes with the format {ip, port} in the
+  # compact format.
   defp compact_format_values(nodes), do: compact_format_values(nodes, "")
   defp compact_format_values([], result), do: result
   defp compact_format_values([head | tail], result) do
@@ -149,6 +151,8 @@ defmodule KRPCProtocol.Encoder do
     compact_format_values(tail, result)
   end
 
+  # This function converts a list of nodes with the format {node_id, ip, port}
+  # in the compact format.
   defp compact_format(nodes), do: compact_format(nodes, "")
   defp compact_format([], result), do: result
   defp compact_format([head | tail], result) do
@@ -166,10 +170,12 @@ defmodule KRPCProtocol.Encoder do
     Bencodex.encode %{"y" => "r", "t" => tid, "r" => options}
   end
 
+  # IPv4 address
   def node_to_binary({oct1, oct2, oct3, oct4}, port) do
     <<oct1 :: 8, oct2 :: 8, oct3 :: 8, oct4 :: 8, port :: 16>>
   end
 
+  # IPv6 address
   def node_to_binary(ip, port) when tuple_size(ip) == 8 do
     ipstr = ip
     |> Tuple.to_list
