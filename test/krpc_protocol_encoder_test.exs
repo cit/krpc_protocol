@@ -96,5 +96,43 @@ defmodule KRPCProtocol.Encoder.Test do
     assert str == result
   end
 
+  ###########
+  # Replies #
+  ###########
+
+  test "ping_reply" do
+    params = [tid: "aa", node_id: "mnopqrstuvwxyz123456"]
+    result = "d1:rd2:id20:mnopqrstuvwxyz123456e1:t2:aa1:y1:re"
+
+    assert KRPCProtocol.encode(:ping_reply, params) == result
+  end
+
+  test "find_node_reply with an IPv4 address" do
+    params = [node_id: "aa", nodes: [{"aa", {97, 98, 99, 100}, 9797}], tid: "bb"]
+    result = "d1:rd2:id2:aa5:nodes8:aaabcd&Ee1:t2:bb1:y1:re"
+
+    assert KRPCProtocol.encode(:find_node_reply, params) == result
+  end
+
+  test "find_node_reply with an IPv6 address" do
+    params = [node_id: "aa", nodes: [{"aa", {9797,9797,9797,9797,9797,9797,9797,9797}, 9797}], tid: "bb"]
+    result = "d1:rd2:id2:aa5:nodes20:aa&E&E&E&E&E&E&E&E&Ee1:t2:bb1:y1:re"
+
+    assert KRPCProtocol.encode(:find_node_reply, params) == result
+  end
+
+  test "get_peers_reply with an IPv4 address" do
+    params = [node_id: "a", values: [{{97, 98, 99, 100}, 9797}], tid: "b", token: "c"]
+    result = "d1:rd2:id1:a5:token1:c6:values6:abcd&Ee1:t1:b1:y1:re"
+
+    assert KRPCProtocol.encode(:get_peers_reply, params) == result
+  end
+
+  test "get_peers_reply with an IPv6 address" do
+    params = [node_id: "a", values: [{{9797,9797,9797,9797,9797,9797,9797,9797}, 9797}], tid: "b", token: "c"]
+    result = "d1:rd2:id1:a5:token1:c6:values18:&E&E&E&E&E&E&E&E&Ee1:t1:b1:y1:re"
+
+    assert KRPCProtocol.encode(:get_peers_reply, params) == result
+  end
 
 end
