@@ -1,5 +1,6 @@
 defmodule KRPCProtocol.Encoder.Test do
   use ExUnit.Case, async: true
+  doctest KRPCProtocol.Encoder
 
   def node_id,   do: String.duplicate("a", 20)
   def info_hash, do: String.duplicate("b", 20)
