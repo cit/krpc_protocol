@@ -64,19 +64,9 @@ defmodule KRPCProtocol.Encoder do
     |> add_option_if_defined(:noseed, args[:noseed])
     |> add_option_if_defined(:want,   args[:want])
 
-    if args[:tid] do
-      gen_dht_query("get_peers", args[:tid], options)
-    else
-      gen_dht_query("get_peers", gen_tid(), options)
-    end
+    gen_dht_query("get_peers", args[:tid] || gen_tid(), options)
   end
 
-  @doc ~S"""
-  This function returns a bencoded mainline DHT announce_peer query.
-
-  ## Example
-  iex> KRPCProtocol.encode(:announce_peer, node_id: node_id, info_hash: info_hash)
-  """
   def encode(:announce_peer, args) do
     options = args[:node_id]
     |> query_dict(args[:info_hash])
@@ -84,11 +74,7 @@ defmodule KRPCProtocol.Encoder do
     |> add_option_if_defined(:port, args[:port])
     |> add_option_if_defined(:token, args[:token])
 
-    if args[:tid] do
-      gen_dht_query("announce_peer", args[:tid], options)
-    else
-      gen_dht_query("announce_peer", gen_tid(), options)
-    end
+    gen_dht_query("announce_peer", args[:tid] || gen_tid(), options)
   end
 
   ###########
