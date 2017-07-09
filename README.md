@@ -9,7 +9,7 @@ First, add `krpc_protocol` to your `mix.exs` dependencies:
 
 ```elixir
 def deps do
-    [{:krpc_protocol, "~> 0.0.3"}]
+    [{:krpc_protocol, "~> 0.0.4"}]
 end
 ```
 
