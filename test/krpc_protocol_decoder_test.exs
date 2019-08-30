@@ -17,6 +17,12 @@ defmodule KRPCProtocol.Decoder.Test do
     assert {:invalid, _} = KRPCProtocol.decode(<<100, 49, 58, 118, 52, 58, 76, 84, 1, 1, 101>>)
   end
 
+  test "Valid message, but with an invalid node_id (> 20 bytes)" do
+    msg = <<100, 49, 58, 114, 100, 50, 58, 105, 100, 52, 48, 58, 12, 189, 73, 171, 209, 27, 51, 102, 53, 100, 99, 56, 51, 99, 100, 52, 101, 57, 51, 48, 50, 56, 56, 100, 102, 48, 99, 97, 99, 53, 98, 51, 102, 53, 100, 99, 56, 51, 102, 102, 101, 49, 58, 116, 50, 58, 181, 151, 49, 58, 121, 49, 58, 114, 101>>
+
+    assert {:invalid, _} = KRPCProtocol.decode(msg)
+  end
+
   test "Valid packet but the node id is not 160 bit long" do
     to_short = "d1:ad2:id18:aaaaaaaaaaaaaaaaaae1:q4:ping1:t2:aa1:y1:qe"
     to_long  = "d1:ad2:id22:aaaaaaaaaaaaaaaaaaaaaa:q4:ping1:t2:aa1:y1:qe"

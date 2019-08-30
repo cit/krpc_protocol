@@ -132,6 +132,10 @@ defmodule KRPCProtocol.Decoder do
       raise "Invalid node id size: #{byte_size(msg["a"]["id"])}"
     end
 
+    if Map.has_key?(msg, "r") and byte_size(msg["r"]["id"]) != 20  do
+      raise "Invalid node id size: #{byte_size(msg["r"]["id"])}"
+    end
+
     if has_nodes?(msg, "nodes") and size_is_multiple_of?(msg["r"]["nodes"], 26) do
       raise "Size of IPv4 nodes is not a multiple of 26: #{byte_size(msg["r"]["nodes"])}"
     end
