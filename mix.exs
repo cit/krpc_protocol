@@ -1,7 +1,7 @@
 defmodule KrpcProtocol.Mixfile do
   use Mix.Project
 
-  def project do
+  def project() do
     [app: :krpc_protocol,
      version: "0.0.4",
      elixir: "~> 1.2",
@@ -12,22 +12,22 @@ defmodule KrpcProtocol.Mixfile do
      deps: deps()]
   end
 
-  def application do
+  def application() do
     []
   end
 
-  defp deps do
+  defp deps() do
     [{:bencodex, "~> 1.0.0"},
      {:ex_doc,   "~> 0.10", only: :dev}]
   end
 
-  defp description do
+  defp description() do
     """
     KRPCProtocol is an elixir package for decoding and encoding mainline DHT messages.
     """
   end
 
-  defp package do
+  defp package() do
     [name:        :krpc_protocol,
      files:       ["lib", "config", "mix.exs", "README*", "LICENSE*"],
      maintainers: ["Florian Adamsky"],
