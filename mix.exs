@@ -18,7 +18,7 @@ defmodule KrpcProtocol.Mixfile do
 
   defp deps() do
     [{:bencodex, "~> 1.0.0"},
-     {:ex_doc,   "~> 0.10", only: :dev}]
+     {:ex_doc,   "~> 0.19", only: :dev}]
   end
 
   defp description() do
